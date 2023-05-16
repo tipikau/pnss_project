@@ -7,10 +7,15 @@ use Src\View;
 use Src\Request;
 use Model\User;
 use Src\Auth\Auth;
-
+use Model\Book;
 
 class Site
 {
+    public function main_page(): string
+    {
+        $book_list = Book::all();
+        return (new View())->render('site.main_page', ['book_list' => $book_list]);
+    }
     public function index(): string
     {
         $posts = Post::all();
@@ -38,7 +43,7 @@ class Site
         }
         //Если удалось аутентифицировать пользователя, то редирект
         if (Auth::attempt($request->all())) {
-            app()->route->redirect('/hello');
+            app()->route->redirect('/main_page');
         }
         //Если аутентификация не удалась, то сообщение об ошибке
         return new View('site.login', ['message' => 'Неправильные логин или пароль']);
@@ -47,8 +52,6 @@ class Site
     public function logout(): void
     {
         Auth::logout();
-        app()->route->redirect('/hello');
+        app()->route->redirect('/login');
     }
-
-
 }
